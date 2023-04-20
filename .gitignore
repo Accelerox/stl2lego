@@ -1,0 +1,4 @@
+# Files that git shouldn't sync
+
+*.DS_Store
+*~
