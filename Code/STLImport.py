@@ -2,7 +2,10 @@ import numpy as np
 from stl import mesh
 import trimesh
 import random
+<<<<<<< HEAD
 import sys
+=======
+>>>>>>> c1990ad36221f3e6fa38394fb465d5ba03847577
 
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
@@ -53,6 +56,7 @@ def stl_to_voxel_array(stl_file, voxel_size):
     else:
         stl_mesh = loaded_mesh
 
+<<<<<<< HEAD
     # Calculate the bounding box of the STL mesh (returns x y z)
     min_coords = stl_mesh.bounds[0]
     max_coords = stl_mesh.bounds[1]
@@ -64,6 +68,15 @@ def stl_to_voxel_array(stl_file, voxel_size):
 
     print("Grid dimension: " + str(grid_dimensions))
 
+=======
+    # Calculate the bounding box of the STL mesh
+    min_coords = stl_mesh.bounds[0]
+    max_coords = stl_mesh.bounds[1]
+
+    # Calculate the dimensions of the voxel grid
+    grid_dimensions = np.ceil((max_coords - min_coords) / voxel_size).astype(int)
+
+>>>>>>> c1990ad36221f3e6fa38394fb465d5ba03847577
     # Initialize the voxel grid
     voxel_grid = np.zeros(grid_dimensions, dtype=bool)
 
@@ -91,6 +104,7 @@ def stl_to_voxel_array(stl_file, voxel_size):
     return voxel_grid
 
 def find_surface_voxels(voxel_array):
+<<<<<<< HEAD
     """
     This functions finds the voxels which have a False neighbour (is connected to air) and returns a
     surface voxel numpy array
@@ -98,6 +112,8 @@ def find_surface_voxels(voxel_array):
     Args:
         numpy voxel_array
     """
+=======
+>>>>>>> c1990ad36221f3e6fa38394fb465d5ba03847577
     surface_voxels = np.zeros_like(voxel_array, dtype=bool)
     
     for x in range(1, voxel_array.shape[0] - 1):
@@ -117,6 +133,7 @@ def find_surface_voxels(voxel_array):
     return surface_voxels
 
 
+<<<<<<< HEAD
 def visualize_voxel_array(voxel_array):
     """
     This function takes a 3D numpy voxel array and plots it using matplotlib.
@@ -124,6 +141,10 @@ def visualize_voxel_array(voxel_array):
     Args:
         voxel_array
     """
+=======
+
+def visualize_voxel_array(voxel_array):
+>>>>>>> c1990ad36221f3e6fa38394fb465d5ba03847577
     fig = plt.figure(figsize=(10, 10))
     ax = fig.add_subplot(111, projection='3d')
     
@@ -141,6 +162,7 @@ def visualize_voxel_array(voxel_array):
 
 
 def main():
+<<<<<<< HEAD
 
     # System arguments
     if len(sys.argv) != 4:
@@ -154,6 +176,12 @@ def main():
 
     voxel_array = stl_to_voxel_array(filepath, height)
     #print(voxel_array)
+=======
+    
+    stl_file = "Pyramid.stl"
+
+    voxel_array = stl_to_voxel_array(stl_file, 1)
+>>>>>>> c1990ad36221f3e6fa38394fb465d5ba03847577
 
     surface_voxels = find_surface_voxels(voxel_array)
 

@@ -1,6 +1,6 @@
 # STL2Lego
 
-
+Introduction 2 the stl2lego project
 
 ## Getting started
 
