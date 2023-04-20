@@ -2,6 +2,7 @@ import numpy as np
 from stl import mesh
 import trimesh
 import random
+import sys
 
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
@@ -52,12 +53,16 @@ def stl_to_voxel_array(stl_file, voxel_size):
     else:
         stl_mesh = loaded_mesh
 
-    # Calculate the bounding box of the STL mesh
+    # Calculate the bounding box of the STL mesh (returns x y z)
     min_coords = stl_mesh.bounds[0]
     max_coords = stl_mesh.bounds[1]
 
+    print("min coords: " + str(min_coords) + ". max coords: " + str(max_coords))
+
     # Calculate the dimensions of the voxel grid
     grid_dimensions = np.ceil((max_coords - min_coords) / voxel_size).astype(int)
+
+    print("Grid dimension: " + str(grid_dimensions))
 
     # Initialize the voxel grid
     voxel_grid = np.zeros(grid_dimensions, dtype=bool)
@@ -86,6 +91,13 @@ def stl_to_voxel_array(stl_file, voxel_size):
     return voxel_grid
 
 def find_surface_voxels(voxel_array):
+    """
+    This functions finds the voxels which have a False neighbour (is connected to air) and returns a
+    surface voxel numpy array
+
+    Args:
+        numpy voxel_array
+    """
     surface_voxels = np.zeros_like(voxel_array, dtype=bool)
     
     for x in range(1, voxel_array.shape[0] - 1):
@@ -105,8 +117,13 @@ def find_surface_voxels(voxel_array):
     return surface_voxels
 
 
-
 def visualize_voxel_array(voxel_array):
+    """
+    This function takes a 3D numpy voxel array and plots it using matplotlib.
+    
+    Args:
+        voxel_array
+    """
     fig = plt.figure(figsize=(10, 10))
     ax = fig.add_subplot(111, projection='3d')
     
@@ -124,10 +141,19 @@ def visualize_voxel_array(voxel_array):
 
 
 def main():
-    
-    stl_file = "Pyramid.stl"
 
-    voxel_array = stl_to_voxel_array(stl_file, 1)
+    # System arguments
+    if len(sys.argv) != 4:
+        print("Usage: python STILImport.py <filepath> <height> <hollow True/False>")
+        sys.exit(1)
+
+    # get command line arguments
+    filepath = sys.argv[1]
+    height = int(sys.argv[2])
+    boolean = bool(int(sys.argv[3]))
+
+    voxel_array = stl_to_voxel_array(filepath, height)
+    #print(voxel_array)
 
     surface_voxels = find_surface_voxels(voxel_array)
 
