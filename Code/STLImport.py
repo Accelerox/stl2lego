@@ -251,7 +251,7 @@ def main():
     #stl_mesh = align_tallest_dimension_with_z(stl_mesh)
 
     # Rescale the STL mesh
-    target_scale = 1
+    target_scale = 0.3
     voxel_size = np.array([7.8, 7.8, 9.6])
     stl_mesh = rescale_mesh(stl_mesh, voxel_size, target_scale)
 
@@ -261,7 +261,7 @@ def main():
     # Visualize the voxel array
     plot_voxel_array(voxel_array, voxel_size)
 
-    save_array_json(voxel_array, "voxel_array")
+    #save_array_json(voxel_array, "voxel_array")
 
 
 if __name__ == "__main__":
