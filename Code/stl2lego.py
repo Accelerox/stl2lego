@@ -58,59 +58,43 @@ def main_calculations(stl_path, scale):
     loading_screen(root, progress_var)
     root.update()
 
-    # Run the main code in a separate thread
-    def run_code(root, stl_path, progress_var):
-        # Update progress using the queue
-        def update_progress_queue(text):
-            progress_var.set(text)
-            root.update()
+    # Load and process the STL file
+    #stl_path = choose_file(path_queue)
 
-        update_progress_queue("Loading STL file...")
+    # Create a mesh object
+    stl_mesh = stl_to_mesh(stl_path)
 
-        # Load and process the STL file
-        #stl_path = choose_file(path_queue)
+    # Rotate the STL mesh
+    #stl_mesh = set_new_z_axis(stl_mesh, 2)
 
-        update_progress_queue("Creating mesh object...")
-        # Create a mesh object
-        stl_mesh = stl_to_mesh(stl_path)
+    # Align the tallest dimension of the mesh with the Z axis
+    #stl_mesh = align_tallest_dimension_with_z(stl_mesh)
 
-        # Rotate the STL mesh
-        #stl_mesh = set_new_z_axis(stl_mesh, 2)
+    # Rescale the STL mesh
+    target_scale = scale
+    voxel_size = np.array([7.8, 7.8, 9.6])
+    stl_mesh = rescale_mesh(stl_mesh, voxel_size, target_scale)
 
-        # Align the tallest dimension of the mesh with the Z axis
-        #stl_mesh = align_tallest_dimension_with_z(stl_mesh)
+    
+    # Convert the STL mesh to a voxel array
+    voxel_array = stl_to_voxel_array(stl_mesh, voxel_size)
 
-        update_progress_queue("Rescaling mesh...")
-        # Rescale the STL mesh
-        target_scale = scale
-        voxel_size = np.array([7.8, 7.8, 9.6])
-        stl_mesh = rescale_mesh(stl_mesh, voxel_size, target_scale)
+    # Visualize the voxel array
+    #plot_voxel_array(voxel_array, voxel_size)
 
-        update_progress_queue("voxelizing...")
-        
-        # Convert the STL mesh to a voxel array
-        voxel_array = stl_to_voxel_array(stl_mesh, voxel_size)
+    #save_array_json(voxel_array, "voxel_array")
 
-        # Visualize the voxel array
-        #plot_voxel_array(voxel_array, voxel_size)
+    # Convert the nested list to a NumPy array and switches axises
+    new_axes_order = [2, 1, 0]  # [0, 1, 2] = [x,y, z] ergo same
+    voxel_array = switch_axes(np.array(voxel_array), new_axes_order)
 
-        #save_array_json(voxel_array, "voxel_array")
+    # Initialize an array to store the tiled output
+    tiled_volume = np.zeros_like(voxel_array, dtype=int)
 
-        # Convert the nested list to a NumPy array and switches axises
-        new_axes_order = [2, 1, 0]  # [0, 1, 2] = [x,y, z] ergo same
-        voxel_array = switch_axes(np.array(voxel_array), new_axes_order)
-
-        # Initialize an array to store the tiled output
-        tiled_volume = np.zeros_like(voxel_array, dtype=int)
-        update_progress_queue("placing blocks...")
-
-        # Instead of calling the plotting functions directly, call the new plot_function
-        root.after(0, plot_function, tiled_volume, voxel_array)
-        # Destroy the loading screen
-        root.after(0, root.destroy)
-
-    # Call 'run_code' with 'root', 'stl_path', and 'progress_var' as arguments
-    run_code(root, stl_path, progress_var)
+    # Instead of calling the plotting functions directly, call the new plot_function
+    root.after(0, plot_function, tiled_volume, voxel_array)
+    # Destroy the loading screen
+    root.after(0, root.destroy)
 
     # Start the main loop
     root.mainloop()
@@ -118,7 +102,7 @@ def main_calculations(stl_path, scale):
 
 def calculate_scale_and_call_function():
     """
-    Helper function for exectuting functions when generate button is called.
+    Helper function for exectuting functions when the generate button is called.
     """
 
     height = float(desired_height.get())
