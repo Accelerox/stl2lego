@@ -4,3 +4,7 @@
 *~
 *.json
 Code/voxel_array.json
+Code/__pycache__/STL2JSON.cpython-311.pyc
+Code/__pycache__/STLImport.cpython-311.pyc
+.gitignore
+Code/__pycache__/bricker_functions.cpython-311.pyc

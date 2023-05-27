@@ -20,7 +20,6 @@ import os
 
 
 
-
 def animate_gif(label, frames, current_frame):
     frame = frames[current_frame]
     current_frame = (current_frame + 1) % len(frames)
@@ -35,7 +34,7 @@ def loading_screen(root, progress_var):
     progress_label = tk.Label(root, textvariable=progress_var)
     progress_label.pack(pady=10)
 
-    gif_path = "/Users/mats/computer-files/code/scripts/stl2lego/Code/window_assets/LEGO_loading.gif"
+    gif_path = "Code/window_assets/LEGO_loading.gif"
     im = Image.open(gif_path)
 
     # Create a Canvas widget to display the animated GIF
