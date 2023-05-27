@@ -1,13 +1,8 @@
-from scipy.spatial.transform import Rotation
 import numpy as np
-from stl import mesh
 import trimesh
-import random
-import sys
-import json
-
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
+
+from scipy.spatial.transform import Rotation
 
 
 def rescale_mesh(stl_mesh, voxel_size, target_scale, height_dimension=2):
@@ -37,7 +32,7 @@ def rescale_mesh(stl_mesh, voxel_size, target_scale, height_dimension=2):
     return stl_mesh
 
 
-def set_new_z_axis(mesh: trimesh.Trimesh, new_z_axis_index: int) -> trimesh.Trimesh:
+def set_z_axis_mesh(mesh: trimesh.Trimesh, new_z_axis_index: int) -> trimesh.Trimesh:
     """
     Sets a new z axis for a trimesh object.
     """
@@ -87,7 +82,7 @@ def align_tallest_dimension_with_z(stl_mesh):
         return stl_mesh
 
     # Otherwise, rotate the mesh to align the tallest dimension with the Z axis
-    return set_new_z_axis(stl_mesh, tallest_dim_index)
+    return set_z_axis_mesh(stl_mesh, tallest_dim_index)
 
 
 def stl_to_voxel_array(stl_mesh, voxel_size) -> np.array:
