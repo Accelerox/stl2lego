@@ -6,7 +6,7 @@ from mpl_toolkits.mplot3d import Axes3D
 from bricker_functions import *
 
 # Load volume data from a JSON file
-with open("voxel_arrays/big_benchy_voxel_array.json", "r") as f:
+with open("Code/voxel_array.json", "r") as f:
     volume = json.load(f)
 
 # Convert the nested list to a NumPy array and switches axises
