@@ -88,7 +88,7 @@ def main_calculations(stl_path, scale):
 
     # Convert the nested list to a NumPy array and switches axises
     new_axes_order = [2, 1, 0]  # [0, 1, 2] = [x,y, z] ergo same
-    voxel_array = switch_axes(np.array(voxel_array), new_axes_order)
+    voxel_array = switch_axis_of_array(np.array(voxel_array), new_axes_order)
 
     # Initialize an array to store the tiled output
     tiled_volume = np.zeros_like(voxel_array, dtype=int)
