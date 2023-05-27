@@ -1,5 +1,5 @@
 """
-This file manages the GUI and calls the functions.
+This file manages the GUI and calls functions.
 
 """
 
@@ -30,7 +30,9 @@ def loading_screen(root, progress_var):
     canvas = tk.Canvas(root, width=350, height=0)
     canvas.pack()
 
-    root.protocol("WM_DELETE_WINDOW", lambda: None)  # Prevent closing the loading screen
+    # Prevent closing the loading screen
+    root.protocol("WM_DELETE_WINDOW", lambda: None)
+
 
 def update_progress(root, progress_var, text):
     def update():
@@ -38,16 +40,20 @@ def update_progress(root, progress_var, text):
 
     root.after(0, update)
 
+
 def choose_file():
     return filedialog.askopenfilename()
 
+
 def plot_function(tiled_volume, volume_array):
-    #plot_legos(tiled_volume, volume_array)
+    # plot_legos(tiled_volume, volume_array)
     center_plot_legos(tiled_volume, volume_array)
     # Call center_plot_legos using the after method to ensure it runs in the main thread
 
+
 def browse_file():
-    file_path.set(filedialog.askopenfilename(filetypes=[("STL files", "*.stl")]))
+    file_path.set(filedialog.askopenfilename(
+        filetypes=[("STL files", "*.stl")]))
 
 
 def main_calculations(stl_path, scale):
@@ -58,31 +64,27 @@ def main_calculations(stl_path, scale):
     loading_screen(root, progress_var)
     root.update()
 
-    # Load and process the STL file
-    #stl_path = choose_file(path_queue)
-
     # Create a mesh object
     stl_mesh = stl_to_mesh(stl_path)
 
     # Rotate the STL mesh
-    #stl_mesh = set_new_z_axis(stl_mesh, 2)
+    # stl_mesh = set_new_z_axis(stl_mesh, 2)
 
     # Align the tallest dimension of the mesh with the Z axis
-    #stl_mesh = align_tallest_dimension_with_z(stl_mesh)
+    # stl_mesh = align_tallest_dimension_with_z(stl_mesh)
 
     # Rescale the STL mesh
     target_scale = scale
     voxel_size = np.array([7.8, 7.8, 9.6])
     stl_mesh = rescale_mesh(stl_mesh, voxel_size, target_scale)
 
-    
     # Convert the STL mesh to a voxel array
     voxel_array = stl_to_voxel_array(stl_mesh, voxel_size)
 
     # Visualize the voxel array
-    #plot_voxel_array(voxel_array, voxel_size)
+    # plot_voxel_array(voxel_array, voxel_size)
 
-    #save_array_json(voxel_array, "voxel_array")
+    # save_array_json(voxel_array, "voxel_array")
 
     # Convert the nested list to a NumPy array and switches axises
     new_axes_order = [2, 1, 0]  # [0, 1, 2] = [x,y, z] ergo same
@@ -138,7 +140,8 @@ if __name__ == "__main__":
     original_stl_height = 1
     if file_path.get() != '':
         try:
-            STL_height(file_path.get()) # You should replace this with the height of the original STL
+            # You should replace this with the height of the original STL
+            STL_height(file_path.get())
         except Exception as e:
             print(f"Error: {e}")
 
@@ -163,11 +166,13 @@ if __name__ == "__main__":
 
     unit_options = ["LEGO bricks", "cm", "m"]
     height_unit.set(unit_options[0])
-    unit_dropdown = ttk.Combobox(frame2, textvariable=height_unit, values=unit_options, state="readonly", width=10)
+    unit_dropdown = ttk.Combobox(
+        frame2, textvariable=height_unit, values=unit_options, state="readonly", width=10)
     unit_dropdown.pack(side=tk.LEFT)
 
     # Start the program from the GUI and init all calls
-    convert_button = tk.Button(frame3, text="Convert", command=calculate_scale_and_call_function)
+    convert_button = tk.Button(
+        frame3, text="Convert", command=calculate_scale_and_call_function)
     convert_button.pack(pady=10)
 
     root_GUI.mainloop()

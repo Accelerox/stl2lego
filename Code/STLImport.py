@@ -25,7 +25,7 @@ def rescale_mesh(stl_mesh, voxel_size, target_scale, height_dimension=2):
                       height_dimension] -= stl_mesh.bounds[0][height_dimension]
 
     # Calculate the scale factor based on the target height and voxel size
-    #current_height = stl_mesh.bounds[1][height_dimension] - stl_mesh.bounds[0][height_dimension]
+    # current_height = stl_mesh.bounds[1][height_dimension] - stl_mesh.bounds[0][height_dimension]
     scale_factor = target_scale
 
     # Scale the mesh by the voxel size in each dimension
@@ -38,6 +38,9 @@ def rescale_mesh(stl_mesh, voxel_size, target_scale, height_dimension=2):
 
 
 def set_new_z_axis(mesh: trimesh.Trimesh, new_z_axis_index: int) -> trimesh.Trimesh:
+    """
+    Sets a new z axis for a trimesh object.
+    """
     # Ensure the provided axis index is valid (0 for X, 1 for Y, or 2 for Z)
     if new_z_axis_index not in [0, 1, 2]:
         raise ValueError("Invalid axis index. Must be 0, 1, or 2.")
@@ -230,4 +233,3 @@ def stl_to_mesh(stl_path: str) -> trimesh.Trimesh:
         stl_mesh = stl_mesh
 
     return stl_mesh
-

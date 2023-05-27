@@ -61,7 +61,7 @@ def plot_legos(tiled_volume, volume_array):
     ax = fig.add_subplot(111, projection="3d")
 
     # Get the dictionary of allowed bricks and their colors
-    allowed_bricks_dict = get_allowed_bricks()
+    allowed_bricks_dict = generate_allowed_bricks()
     # Extract the keys (brick dimensions) from the dictionary
     allowed_lego_bricks = list(allowed_bricks_dict.keys())
 
@@ -70,17 +70,19 @@ def plot_legos(tiled_volume, volume_array):
     # Attempt to tile the volume with the allowed Lego bricks
     for z, y, x in itertools.product(range(volume_array.shape[0]), range(volume_array.shape[1]), range(volume_array.shape[2])):
         if volume_array[z, y, x] and not tiled_volume[z, y, x]:
-            sorted_bricks = sorted(allowed_lego_bricks, key=lambda brick: brick[0] * brick[1] * brick[2], reverse=True)
+            sorted_bricks = sorted(
+                allowed_lego_bricks, key=lambda brick: brick[0] * brick[1] * brick[2], reverse=True)
             for brick in sorted_bricks:
                 if can_place_brick(brick, volume_array, z, y, x) and is_brick_supported(brick, tiled_volume, z, y, x):
                     place_brick(brick, tiled_volume, z, y, x, bricks_placed)
-                    ax.bar3d(x, y, z, brick[2], brick[1], brick[0], color=allowed_bricks_dict.get(brick), shade=True)
+                    ax.bar3d(x, y, z, brick[2], brick[1], brick[0], color=allowed_bricks_dict.get(
+                        brick), shade=True)
                     # Stop iterating through bricks since one has been placed
                     break
     # Set the aspect ratio of x and y axes to be equal
-    ax.set_box_aspect([7.8, 7.8, 9.6]) # You can change the values inside the list to adjust the aspect ratio
+    # You can change the values inside the list to adjust the aspect ratio
+    ax.set_box_aspect([7.8, 7.8, 9.6])
     plt.gca().set_aspect('equal', adjustable='box')
-
 
     # Set the axis labels for the plot
     ax.set_xlabel("X")
@@ -109,15 +111,19 @@ def center_plot_legos(tiled_volume, volume_array):
     # Iterate through the volume array starting from the middle bottom
     for z, y, x in itertools.product(
         list(range(0, volume_array.shape[0])),
-        list(range(middle_indices[1], volume_array.shape[1])) + list(range(0, middle_indices[1])),
-        list(range(middle_indices[2], volume_array.shape[2])) + list(range(0, middle_indices[2]))
+        list(range(middle_indices[1], volume_array.shape[1])
+             ) + list(range(0, middle_indices[1])),
+        list(range(middle_indices[2], volume_array.shape[2])
+             ) + list(range(0, middle_indices[2]))
     ):
         if volume_array[z, y, x] and not tiled_volume[z, y, x]:
-            sorted_bricks = sorted(allowed_lego_bricks, key=lambda brick: brick[0] * brick[1] * brick[2], reverse=True)
+            sorted_bricks = sorted(
+                allowed_lego_bricks, key=lambda brick: brick[0] * brick[1] * brick[2], reverse=True)
             for brick in sorted_bricks:
                 if can_place_brick(brick, volume_array, z, y, x) and is_brick_supported(brick, tiled_volume, z, y, x):
                     place_brick(brick, tiled_volume, z, y, x, bricks_placed)
-                    ax.bar3d(x, y, z, brick[2], brick[1], brick[0] * 9.6/7.8, color=allowed_bricks_dict.get(brick), shade=True)
+                    ax.bar3d(x, y, z, brick[2], brick[1], brick[0] * 9.6 /
+                             7.8, color=allowed_bricks_dict.get(brick), shade=True)
                     # Stop iterating through bricks since one has been placed
                     break
     # Save the dictionary as a JSON file
@@ -125,7 +131,8 @@ def center_plot_legos(tiled_volume, volume_array):
         json.dump(bricks_placed, json_file)
 
     # Set the aspect ratio of x and y axes to be equal
-    ax.set_box_aspect([7.8, 7.8, 9.6]) # You can change the values inside the list to adjust the aspect ratio
+    # You can change the values inside the list to adjust the aspect ratio
+    ax.set_box_aspect([7.8, 7.8, 9.6])
     plt.gca().set_aspect('equal', adjustable='box')
 
     # Set the axis labels for the plot
@@ -142,9 +149,7 @@ def rotate_2D_coordinates(coordinates):
 
 
 def generate_allowed_bricks():
-    """Functions that determines the sizes avalible to build with. Returns a
-    json file that can be read by python or VB.
-    """
+
     brick_list = {
         (1, 1, 1): "red",
         (1, 1, 2): "blue",
@@ -160,7 +165,8 @@ def generate_allowed_bricks():
     print(rotated_brick_list)
 
     # Convert tuple keys to strings, as JSON only supports string keys
-    brick_list_str_keys = {str(key): value for key, value in brick_list.items()}
+    brick_list_str_keys = {str(key): value for key,
+                           value in brick_list.items()}
 
     with open("allowed_brick_list.json", "w") as f:
         json.dump(brick_list_str_keys, f)
