@@ -34,17 +34,6 @@ def loading_screen(root, progress_var):
     root.protocol("WM_DELETE_WINDOW", lambda: None)
 
 
-def update_progress(root, progress_var, text):
-    def update():
-        progress_var.set(text)
-
-    root.after(0, update)
-
-
-def choose_file():
-    return filedialog.askopenfilename()
-
-
 def plot_function(tiled_volume, volume_array):
     # plot_legos(tiled_volume, volume_array)
     center_plot_legos(tiled_volume, volume_array)
