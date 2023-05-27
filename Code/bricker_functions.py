@@ -5,7 +5,17 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
 
-def switch_axes(array, new_axes_order):
+def switch_axis_of_array(array, new_axes_order):
+    """
+    Transposes the given array to match the specified axis order.
+
+    Parameters:
+    array (numpy.ndarray): The array to transpose.
+    new_axes_order (list): The new order for the axes. A list of three unique integers in the range [0, 2].
+
+    Returns:
+    numpy.ndarray: The transposed array.
+    """
     if len(new_axes_order) != 3:
         raise ValueError("Invalid axes. Please provide a list of length 3.")
     if not all(0 <= axis <= 2 for axis in new_axes_order):
@@ -17,6 +27,17 @@ def switch_axes(array, new_axes_order):
 
 
 def can_place_brick(brick, volume_array, z, y, x):
+    """
+    Determines whether a brick can be placed at a given position in the volume array.
+
+    Parameters:
+    brick (tuple): The dimensions of the brick.
+    volume_array (numpy.ndarray): The 3D array representing the volume to be filled.
+    z, y, x (int): The coordinates in the volume array where the brick should be placed.
+
+    Returns:
+    bool: True if the brick can be placed at the given position, False otherwise.
+    """
     for dz in range(brick[0]):
         for dy in range(brick[1]):
             for dx in range(brick[2]):
@@ -31,6 +52,15 @@ def can_place_brick(brick, volume_array, z, y, x):
 
 
 def place_brick(brick, tiled_volume, z, y, x, bricks_placed):
+    """
+    Places a brick in the volume and records its position.
+
+    Parameters:
+    brick (tuple): The dimensions of the brick.
+    tiled_volume (numpy.ndarray): The 3D array representing the filled volume.
+    z, y, x (int): The coordinates in the volume array where the brick should be placed.
+    bricks_placed (list): A list of bricks that have been placed and their positions.
+    """
     for dz in range(brick[0]):
         for dy in range(brick[1]):
             for dx in range(brick[2]):
@@ -39,6 +69,17 @@ def place_brick(brick, tiled_volume, z, y, x, bricks_placed):
 
 
 def is_brick_supported(brick, tiled_volume, z, y, x):
+    """
+    Checks if a brick at a given position is supported by another brick.
+
+    Parameters:
+    brick (tuple): The dimensions of the brick.
+    tiled_volume (numpy.ndarray): The 3D array representing the filled volume.
+    z, y, x (int): The coordinates in the volume array of the brick.
+
+    Returns:
+    bool: True if the brick is supported, False otherwise.
+    """
     if z == 0:  # The brick is on the base layer, and it is supported by default
         return True
 
@@ -55,6 +96,13 @@ def is_brick_supported(brick, tiled_volume, z, y, x):
 
 
 def plot_legos(tiled_volume, volume_array):
+    """
+    Plots the LEGO model using matplotlib, given the final tiled volume and the volume array.
+
+    Parameters:
+    tiled_volume (numpy.ndarray): The 3D array representing the filled volume.
+    volume_array (numpy.ndarray): The 3D array representing the volume to be filled.
+    """
     # Create a new figure for the plot
     fig = plt.figure()
     # Add a 3D subplot to the figure
@@ -93,6 +141,14 @@ def plot_legos(tiled_volume, volume_array):
 
 
 def center_plot_legos(tiled_volume, volume_array):
+    """
+    Plots the LEGO model using matplotlib, given the final tiled volume and the volume array.
+    This function attempts to tile the volume starting from the middle bottom.
+
+    Parameters:
+    tiled_volume (numpy.ndarray): The 3D array representing the filled volume.
+    volume_array (numpy.ndarray): The 3D array representing the volume to be filled.
+    """
     # Create a new figure for the plot
     fig = plt.figure()
     # Add a 3D subplot to the figure
@@ -144,11 +200,28 @@ def center_plot_legos(tiled_volume, volume_array):
 
 
 def rotate_2D_coordinates(coordinates):
+    """
+    Returns the coordinates and their rotation in 2D.
+
+    Parameters:
+    coordinates (tuple): The x, y, and z coordinates.
+
+    Returns:
+    list: A list containing the original coordinates and their rotation.
+    """
     x, y, z = coordinates
     return [(x, y, z), (x, z, y)]
 
 
 def generate_allowed_bricks():
+    """
+    Generates a list of allowed LEGO brick sizes and their corresponding colors.
+    Saves the list as a JSON file.
+
+    Returns:
+    dict: A dictionary of allowed LEGO bricks. The keys are strings representing 
+    the brick dimensions and the values are their corresponding colors.
+    """
 
     brick_list = {
         (1, 1, 1): "red",
