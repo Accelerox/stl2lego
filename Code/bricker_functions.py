@@ -4,16 +4,6 @@ import json
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
-def get_allowed_bricks():
-    with open("allowed_brick_list.json", "r") as f:
-        allowed_brick_JSON = json.load(f)
-
-    # Convert string keys back to tuples
-    brick_dict = {tuple(map(int, key.strip("()").split(", "))): value for key, value in allowed_brick_JSON.items()}
-
-    #allowed_lego_bricks = list(brick_colors.keys())
-
-    return brick_dict
 
 def switch_axes(array, new_axes_order):
     if len(new_axes_order) != 3:
@@ -39,12 +29,14 @@ def can_place_brick(brick, volume_array, z, y, x):
                     return False
     return True
 
+
 def place_brick(brick, tiled_volume, z, y, x, bricks_placed):
     for dz in range(brick[0]):
         for dy in range(brick[1]):
             for dx in range(brick[2]):
                 tiled_volume[z + dz, y + dy, x + dx] = 1
     bricks_placed.append({"brick": brick, "position": (z, y, x)})
+
 
 def is_brick_supported(brick, tiled_volume, z, y, x):
     if z == 0:  # The brick is on the base layer, and it is supported by default
@@ -105,7 +97,7 @@ def center_plot_legos(tiled_volume, volume_array):
     ax = fig.add_subplot(111, projection="3d")
 
     # Get the dictionary of allowed bricks and their colors
-    allowed_bricks_dict = get_allowed_bricks()
+    allowed_bricks_dict = generate_allowed_bricks()
     # Extract the keys (brick dimensions) from the dictionary
     allowed_lego_bricks = list(allowed_bricks_dict.keys())
 
@@ -143,9 +135,11 @@ def center_plot_legos(tiled_volume, volume_array):
     # Show the plot
     plt.show()
 
+
 def rotate_2D_coordinates(coordinates):
     x, y, z = coordinates
     return [(x, y, z), (x, z, y)]
+
 
 def generate_allowed_bricks():
     """Functions that determines the sizes avalible to build with. Returns a
@@ -170,3 +164,5 @@ def generate_allowed_bricks():
 
     with open("allowed_brick_list.json", "w") as f:
         json.dump(brick_list_str_keys, f)
+
+    return brick_list_str_keys
