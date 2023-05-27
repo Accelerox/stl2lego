@@ -62,7 +62,6 @@ def is_brick_supported(brick, tiled_volume, z, y, x):
     return False
 
 
-
 def plot_legos(tiled_volume, volume_array):
     # Create a new figure for the plot
     fig = plt.figure()
@@ -76,7 +75,7 @@ def plot_legos(tiled_volume, volume_array):
 
     bricks_placed = []
 
-        # Attempt to tile the volume with the allowed Lego bricks
+    # Attempt to tile the volume with the allowed Lego bricks
     for z, y, x in itertools.product(range(volume_array.shape[0]), range(volume_array.shape[1]), range(volume_array.shape[2])):
         if volume_array[z, y, x] and not tiled_volume[z, y, x]:
             sorted_bricks = sorted(allowed_lego_bricks, key=lambda brick: brick[0] * brick[1] * brick[2], reverse=True)
@@ -91,13 +90,13 @@ def plot_legos(tiled_volume, volume_array):
     plt.gca().set_aspect('equal', adjustable='box')
 
 
-
     # Set the axis labels for the plot
     ax.set_xlabel("X")
     ax.set_ylabel("Y")
     ax.set_zlabel("Z")
     # Show the plot
     plt.show()
+
 
 def center_plot_legos(tiled_volume, volume_array):
     # Create a new figure for the plot
