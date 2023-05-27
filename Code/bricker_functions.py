@@ -216,7 +216,6 @@ def rotate_2D_coordinates(coordinates):
 def generate_allowed_bricks():
     """
     Generates a list of allowed LEGO brick sizes and their corresponding colors.
-    Saves the list as a JSON file.
 
     Returns:
     dict: A dictionary of allowed LEGO bricks. The keys are strings representing 
@@ -237,11 +236,5 @@ def generate_allowed_bricks():
 
     print(rotated_brick_list)
 
-    # Convert tuple keys to strings, as JSON only supports string keys
-    brick_list_str_keys = {str(key): value for key,
-                           value in brick_list.items()}
+    return rotated_brick_list
 
-    with open("allowed_brick_list.json", "w") as f:
-        json.dump(brick_list_str_keys, f)
-
-    return brick_list_str_keys
