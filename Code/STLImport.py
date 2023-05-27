@@ -91,6 +91,18 @@ def align_tallest_dimension_with_z(stl_mesh):
 
 
 def stl_to_voxel_array(stl_mesh, voxel_size) -> np.array:
+    """
+    Converts an STL mesh into a voxel representation. Voxels are set to True if their
+    centers are within the geometry of the mesh.
+
+    Args:
+        stl_mesh: The input STL mesh.
+        voxel_size: The size of the voxel in each dimension.
+
+    Returns:
+        A 3D numpy array representing the voxelized mesh.
+    """
+
     # Calculate the bounding box of the STL mesh (returns x y z)
     min_coords = stl_mesh.bounds[0]
     max_coords = stl_mesh.bounds[1]
@@ -139,11 +151,14 @@ def stl_to_voxel_array(stl_mesh, voxel_size) -> np.array:
 
 def find_surface_voxels(voxel_array) -> np.array:
     """
-    This functions finds the voxels which have a False neighbour (is connected to air) and returns a
-    surface voxel numpy array
+    Identifies the surface voxels in the voxel array. A voxel is considered a surface voxel 
+    if it has a False neighbor.
 
     Args:
-        numpy voxel_array
+        voxel_array: 3D numpy array representing the voxel grid.
+
+    Returns:
+        A 3D numpy array of the same size as the input array, with True values for surface voxels and False elsewhere.
     """
     surface_voxels = np.zeros_like(voxel_array, dtype=bool)
 
@@ -166,11 +181,11 @@ def find_surface_voxels(voxel_array) -> np.array:
 
 def plot_voxel_array(voxel_array, voxel_size):
     """
-    This function takes a 3D numpy voxel array and plots it using matplotlib.
+    Visualizes the given voxel array using matplotlib, where each voxel is represented as a cube.
 
     Args:
-        voxel_array: 3D numpy array representing the voxel grid
-        voxel_size: numpy array of shape (3,) representing the size of each voxel
+        voxel_array: 3D numpy array representing the voxel grid.
+        voxel_size: The size of each voxel in each dimension.
     """
     fig = plt.figure(figsize=(10, 10))
     ax = fig.add_subplot(111, projection='3d')
@@ -214,16 +229,24 @@ def plot_voxel_array(voxel_array, voxel_size):
 
 
 def save_array_json(voxel_array: np.array, path: str):
-    """Saves a numpy array to json file. .json is automatically added to path"""
+    """
+    Saves a numpy array as a json file at the specified path. The '.json' extension is automatically added.
 
-    # convert to python nested list
-    voxel_list = voxel_array.tolist()
-
-    with open(path+'.json', 'w') as outfile:
-        json.dump(voxel_list, outfile)
-
+    Args:
+        voxel_array: The numpy array to be saved.
+        path: The directory path where the file is to be saved.
+    """
 
 def stl_to_mesh(stl_path: str) -> trimesh.Trimesh:
+    """
+    Loads an STL file from a given path and returns a trimesh object.
+
+    Args:
+        stl_path: The path of the STL file.
+
+    Returns:
+        A trimesh object.
+    """
     stl_mesh = trimesh.load_mesh(stl_path)
 
     # Check if the loaded_mesh is a Scene object, if so, extract the mesh
