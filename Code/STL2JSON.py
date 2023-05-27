@@ -1,17 +1,9 @@
-#import itertools
-#import numpy as np
-#import json
-#import matplotlib.pyplot as plt
-#from mpl_toolkits.mplot3d import Axes3D
+import tkinter as tk
+
+from tkinter import filedialog
 from bricker_functions import *
 from STLImport import *
-#from scipy.spatial.transform import Rotation
 from stl import mesh
-#import trimesh
-#import random
-import sys
-import tkinter as tk
-from tkinter import filedialog
 
 
 def loading_screen(root, progress_var):
