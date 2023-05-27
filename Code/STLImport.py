@@ -231,38 +231,3 @@ def stl_to_mesh(stl_path: str) -> trimesh.Trimesh:
 
     return stl_mesh
 
-
-def main():
-
-    benchy = "Code/STLs/3DBenchy.stl"
-    pyramid = "Code/STLs/Pyramid.stl"
-    sphere = "Code/STLs/sphere.stl"
-
-    # Load and process the STL file
-    stl_path = benchy
-
-    # Create a mesh object
-    stl_mesh = stl_to_mesh(stl_path)
-
-    # Rotate the STL mesh
-    #stl_mesh = set_new_z_axis(stl_mesh, 2)
-
-    # Align the tallest dimension of the mesh with the Z axis
-    #stl_mesh = align_tallest_dimension_with_z(stl_mesh)
-
-    # Rescale the STL mesh
-    target_scale = 0.3
-    voxel_size = np.array([7.8, 7.8, 9.6])
-    stl_mesh = rescale_mesh(stl_mesh, voxel_size, target_scale)
-
-    # Convert the STL mesh to a voxel array
-    voxel_array = stl_to_voxel_array(stl_mesh, voxel_size)
-
-    # Visualize the voxel array
-    plot_voxel_array(voxel_array, voxel_size)
-
-    #save_array_json(voxel_array, "voxel_array")
-
-
-if __name__ == "__main__":
-    main()
