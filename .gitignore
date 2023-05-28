@@ -4,3 +4,5 @@
 *~
 *.json
 Code/voxel_array.json
+Code/__pycache__/*
+

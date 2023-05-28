@@ -1,0 +1,5 @@
+numpy
+trimesh
+matplotlib
+scipy
+numpy-stl

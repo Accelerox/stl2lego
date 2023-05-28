@@ -1,13 +1,15 @@
-from scipy.spatial.transform import Rotation
+"""
+This module contains functions for manipulating STL files, performing 
+operations on meshes, and visualizing voxel arrays. The primary purpose of these
+functions is to aid in the voxelization of 3D models.
+"""
+
 import numpy as np
-from stl import mesh
 import trimesh
-import random
-import sys
+import matplotlib.pyplot as plt
 import json
 
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
+from scipy.spatial.transform import Rotation
 
 
 def rescale_mesh(stl_mesh, voxel_size, target_scale, height_dimension=2):
@@ -17,7 +19,8 @@ def rescale_mesh(stl_mesh, voxel_size, target_scale, height_dimension=2):
         stl_mesh: The input STL mesh.
         voxel_size: The size of the voxel in each dimension.
         target_scale: The scale.
-        height_dimension: The dimension to be treated as the height (0 for x, 1 for y, 2 for z).
+        height_dimension: The dimension to be treated as the height 
+        (0 for x, 1 for y, 2 for z).
     """
 
     # Translate the mesh so that its lowest height_dimension-coordinate is at 0
@@ -25,7 +28,7 @@ def rescale_mesh(stl_mesh, voxel_size, target_scale, height_dimension=2):
                       height_dimension] -= stl_mesh.bounds[0][height_dimension]
 
     # Calculate the scale factor based on the target height and voxel size
-    #current_height = stl_mesh.bounds[1][height_dimension] - stl_mesh.bounds[0][height_dimension]
+    # current_height = stl_mesh.bounds[1][height_dimension] - stl_mesh.bounds[0][height_dimension]
     scale_factor = target_scale
 
     # Scale the mesh by the voxel size in each dimension
@@ -37,7 +40,10 @@ def rescale_mesh(stl_mesh, voxel_size, target_scale, height_dimension=2):
     return stl_mesh
 
 
-def set_new_z_axis(mesh: trimesh.Trimesh, new_z_axis_index: int) -> trimesh.Trimesh:
+def set_z_axis_mesh(mesh: trimesh.Trimesh, new_z_axis_index: int) -> trimesh.Trimesh:
+    """
+    Sets a new z axis for a trimesh object.
+    """
     # Ensure the provided axis index is valid (0 for X, 1 for Y, or 2 for Z)
     if new_z_axis_index not in [0, 1, 2]:
         raise ValueError("Invalid axis index. Must be 0, 1, or 2.")
@@ -84,10 +90,22 @@ def align_tallest_dimension_with_z(stl_mesh):
         return stl_mesh
 
     # Otherwise, rotate the mesh to align the tallest dimension with the Z axis
-    return set_new_z_axis(stl_mesh, tallest_dim_index)
+    return set_z_axis_mesh(stl_mesh, tallest_dim_index)
 
 
 def stl_to_voxel_array(stl_mesh, voxel_size) -> np.array:
+    """
+    Converts an STL mesh into a voxel representation. Voxels are set to True if their
+    centers are within the geometry of the mesh.
+
+    Args:
+        stl_mesh: The input STL mesh.
+        voxel_size: The size of the voxel in each dimension.
+
+    Returns:
+        A 3D numpy array representing the voxelized mesh.
+    """
+
     # Calculate the bounding box of the STL mesh (returns x y z)
     min_coords = stl_mesh.bounds[0]
     max_coords = stl_mesh.bounds[1]
@@ -116,7 +134,8 @@ def stl_to_voxel_array(stl_mesh, voxel_size) -> np.array:
                 voxel_center = min_coords + voxel_size * \
                     (np.array([x, y, z]) + 0.5) + grid_offset
 
-                # Set the ray origin to the voxel center and use the direction pointing from the mesh's centroid to the voxel center
+                # Set the ray origin to the voxel center and use the direction 
+                # pointing from the mesh's centroid to the voxel center
                 ray_origin = voxel_center
                 ray_direction = (voxel_center - stl_mesh.centroid) / \
                     np.linalg.norm(voxel_center - stl_mesh.centroid)
@@ -136,11 +155,15 @@ def stl_to_voxel_array(stl_mesh, voxel_size) -> np.array:
 
 def find_surface_voxels(voxel_array) -> np.array:
     """
-    This functions finds the voxels which have a False neighbour (is connected to air) and returns a
-    surface voxel numpy array
+    Identifies the surface voxels in the voxel array. A voxel is considered a surface voxel 
+    if it has a False neighbor.
 
     Args:
-        numpy voxel_array
+        voxel_array: 3D numpy array representing the voxel grid.
+
+    Returns:
+        A 3D numpy array of the same size as the input array, with True values 
+        for surface voxels and False elsewhere.
     """
     surface_voxels = np.zeros_like(voxel_array, dtype=bool)
 
@@ -163,11 +186,12 @@ def find_surface_voxels(voxel_array) -> np.array:
 
 def plot_voxel_array(voxel_array, voxel_size):
     """
-    This function takes a 3D numpy voxel array and plots it using matplotlib.
+    Visualizes the given voxel array using matplotlib, where each voxel is 
+    represented as a cube.
 
     Args:
-        voxel_array: 3D numpy array representing the voxel grid
-        voxel_size: numpy array of shape (3,) representing the size of each voxel
+        voxel_array: 3D numpy array representing the voxel grid.
+        voxel_size: The size of each voxel in each dimension.
     """
     fig = plt.figure(figsize=(10, 10))
     ax = fig.add_subplot(111, projection='3d')
@@ -187,7 +211,8 @@ def plot_voxel_array(voxel_array, voxel_size):
     min_x, min_y, min_z = true_voxels.min(axis=0) - buffer
     max_x, max_y, max_z = true_voxels.max(axis=0) + buffer
 
-    # Set the axis limits to the min and max indices in each dimension (scaled by voxel size)
+    # Set the axis limits to the min and max indices in each dimension 
+    # (scaled by voxel size)
     ax.set_xlim(min_x * voxel_size_mm[0], max_x * voxel_size_mm[0])
     ax.set_ylim(min_y * voxel_size_mm[1], max_y * voxel_size_mm[1])
     ax.set_zlim(min_z * voxel_size_mm[2], max_z * voxel_size_mm[2])
@@ -211,8 +236,14 @@ def plot_voxel_array(voxel_array, voxel_size):
 
 
 def save_array_json(voxel_array: np.array, path: str):
-    """Saves a numpy array to json file. .json is automatically added to path"""
+    """
+    Saves a numpy array as a json file at the specified path. The '.json' 
+    extension is automatically added.
 
+    Args:
+        voxel_array: The numpy array to be saved.
+        path: The directory path where the file is to be saved.
+    """
     # convert to python nested list
     voxel_list = voxel_array.tolist()
 
@@ -221,6 +252,15 @@ def save_array_json(voxel_array: np.array, path: str):
 
 
 def stl_to_mesh(stl_path: str) -> trimesh.Trimesh:
+    """
+    Loads an STL file from a given path and returns a trimesh object.
+
+    Args:
+        stl_path: The path of the STL file.
+
+    Returns:
+        A trimesh object.
+    """
     stl_mesh = trimesh.load_mesh(stl_path)
 
     # Check if the loaded_mesh is a Scene object, if so, extract the mesh
@@ -230,39 +270,3 @@ def stl_to_mesh(stl_path: str) -> trimesh.Trimesh:
         stl_mesh = stl_mesh
 
     return stl_mesh
-
-
-def main():
-
-    benchy = "Code/STLs/3DBenchy.stl"
-    pyramid = "Code/STLs/Pyramid.stl"
-    sphere = "Code/STLs/sphere.stl"
-
-    # Load and process the STL file
-    stl_path = benchy
-
-    # Create a mesh object
-    stl_mesh = stl_to_mesh(stl_path)
-
-    # Rotate the STL mesh
-    #stl_mesh = set_new_z_axis(stl_mesh, 2)
-
-    # Align the tallest dimension of the mesh with the Z axis
-    #stl_mesh = align_tallest_dimension_with_z(stl_mesh)
-
-    # Rescale the STL mesh
-    target_scale = 0.3
-    voxel_size = np.array([7.8, 7.8, 9.6])
-    stl_mesh = rescale_mesh(stl_mesh, voxel_size, target_scale)
-
-    # Convert the STL mesh to a voxel array
-    voxel_array = stl_to_voxel_array(stl_mesh, voxel_size)
-
-    # Visualize the voxel array
-    plot_voxel_array(voxel_array, voxel_size)
-
-    #save_array_json(voxel_array, "voxel_array")
-
-
-if __name__ == "__main__":
-    main()
