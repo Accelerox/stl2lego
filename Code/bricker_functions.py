@@ -2,7 +2,6 @@ import itertools
 import numpy as np
 import json
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
 
 
 def switch_axis_of_array(array, new_axes_order):
@@ -51,23 +50,6 @@ def can_place_brick(brick, volume_array, z, y, x):
     return True
 
 
-def place_brick(brick, tiled_volume, z, y, x, bricks_placed):
-    """
-    Places a brick in the volume and records its position.
-
-    Parameters:
-    brick (tuple): The dimensions of the brick.
-    tiled_volume (numpy.ndarray): The 3D array representing the filled volume.
-    z, y, x (int): The coordinates in the volume array where the brick should be placed.
-    bricks_placed (list): A list of bricks that have been placed and their positions.
-    """
-    for dz in range(brick[0]):
-        for dy in range(brick[1]):
-            for dx in range(brick[2]):
-                tiled_volume[z + dz, y + dy, x + dx] = 1
-    bricks_placed.append({"brick": brick, "position": (z, y, x)})
-
-
 def is_brick_supported(brick, tiled_volume, z, y, x):
     """
     Checks if a brick at a given position is supported by another brick.
@@ -93,6 +75,23 @@ def is_brick_supported(brick, tiled_volume, z, y, x):
                     return True
 
     return False
+
+
+def place_brick(brick, tiled_volume, z, y, x, bricks_placed):
+    """
+    Places a brick in the volume and records its position.
+
+    Parameters:
+    brick (tuple): The dimensions of the brick.
+    tiled_volume (numpy.ndarray): The 3D array representing the filled volume.
+    z, y, x (int): The coordinates in the volume array where the brick should be placed.
+    bricks_placed (list): A list of bricks that have been placed and their positions.
+    """
+    for dz in range(brick[0]):
+        for dy in range(brick[1]):
+            for dx in range(brick[2]):
+                tiled_volume[z + dz, y + dy, x + dx] = 1
+    bricks_placed.append({"brick": brick, "position": (z, y, x)})
 
 
 def plot_legos(tiled_volume, volume_array):
@@ -140,7 +139,7 @@ def plot_legos(tiled_volume, volume_array):
     plt.show()
 
 
-def center_plot_legos(tiled_volume, volume_array):
+def center_plot_legos(tiled_volume, voxel_array):
     """
     Plots the LEGO model using matplotlib, given the final tiled volume and the volume array.
     This function attempts to tile the volume starting from the middle bottom.
@@ -162,22 +161,26 @@ def center_plot_legos(tiled_volume, volume_array):
     bricks_placed = []
 
     # Calculate the middle indices for the volume array
-    middle_indices = [dim // 2 for dim in volume_array.shape]
+    middle_indices = [dim // 2 for dim in voxel_array.shape]
 
     # Iterate through the volume array starting from the middle bottom
     for z, y, x in itertools.product(
-        list(range(0, volume_array.shape[0])),
-        list(range(middle_indices[1], volume_array.shape[1])
+        list(range(0, voxel_array.shape[0])),
+        list(range(middle_indices[1], voxel_array.shape[1])
              ) + list(range(0, middle_indices[1])),
-        list(range(middle_indices[2], volume_array.shape[2])
+        list(range(middle_indices[2], voxel_array.shape[2])
              ) + list(range(0, middle_indices[2]))
     ):
-        if volume_array[z, y, x] and not tiled_volume[z, y, x]:
+        if voxel_array[z, y, x] and not tiled_volume[z, y, x]:
             sorted_bricks = sorted(
                 allowed_lego_bricks, key=lambda brick: brick[0] * brick[1] * brick[2], reverse=True)
+            
             for brick in sorted_bricks:
-                if can_place_brick(brick, volume_array, z, y, x) and is_brick_supported(brick, tiled_volume, z, y, x):
+                if can_place_brick(brick, voxel_array, z, y, x) and \
+                    is_brick_supported(brick, tiled_volume, z, y, x):
+
                     place_brick(brick, tiled_volume, z, y, x, bricks_placed)
+                    
                     ax.bar3d(x, y, z, brick[2], brick[1], brick[0] * 9.6 /
                              7.8, color=allowed_bricks_dict.get(brick), shade=True)
                     # Stop iterating through bricks since one has been placed
