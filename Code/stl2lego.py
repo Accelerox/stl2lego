@@ -1,6 +1,15 @@
 """
-This file manages the GUI and calls functions.
+-----------------------------------
+STL to LEGO Converter - Main Script
+-----------------------------------
 
+Description:
+-------------
+This script provides an interface to transform STL (Stereolithography) 
+3D model files into LEGO brick structures. The 3D models can be scaled according
+to the desired height and unit of measure specified by the user.
+This is accomplished by executing several operations such as mesh rotation, 
+alignment, rescaling, conversion to voxel arrays and ultimately, plotting the structure.
 """
 
 import tkinter as tk

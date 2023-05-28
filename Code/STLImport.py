@@ -1,3 +1,9 @@
+"""
+This module contains functions for manipulating STL files, performing 
+operations on meshes, and visualizing voxel arrays. The primary purpose of these
+functions is to aid in the voxelization of 3D models.
+"""
+
 import numpy as np
 import trimesh
 import matplotlib.pyplot as plt

@@ -1,3 +1,10 @@
+"""
+This script contains a collection of functions designed for generating, manipulating, and plotting 3D LEGO models.
+The core functionality includes switching array axes, checking if a LEGO brick can be placed or is supported at a 
+given position, placing bricks, and generating plots of completed models. In addition, bricks and their rotations 
+are defined and colors are assigned for plotting.
+"""
+
 import itertools
 import numpy as np
 import json
@@ -174,13 +181,13 @@ def center_plot_legos(tiled_volume, voxel_array):
         if voxel_array[z, y, x] and not tiled_volume[z, y, x]:
             sorted_bricks = sorted(
                 allowed_lego_bricks, key=lambda brick: brick[0] * brick[1] * brick[2], reverse=True)
-            
+
             for brick in sorted_bricks:
                 if can_place_brick(brick, voxel_array, z, y, x) and \
-                    is_brick_supported(brick, tiled_volume, z, y, x):
+                        is_brick_supported(brick, tiled_volume, z, y, x):
 
                     place_brick(brick, tiled_volume, z, y, x, bricks_placed)
-                    
+
                     ax.bar3d(x, y, z, brick[2], brick[1], brick[0] * 9.6 /
                              7.8, color=allowed_bricks_dict.get(brick), shade=True)
                     # Stop iterating through bricks since one has been placed
@@ -240,4 +247,3 @@ def generate_allowed_bricks():
     print(rotated_brick_list)
 
     return rotated_brick_list
-
