@@ -34,12 +34,6 @@ def loading_screen(root, progress_var):
     root.protocol("WM_DELETE_WINDOW", lambda: None)
 
 
-def plot_function(tiled_volume, volume_array):
-    # plot_legos(tiled_volume, volume_array)
-    center_plot_legos(tiled_volume, volume_array)
-    # Call center_plot_legos using the after method to ensure it runs in the main thread
-
-
 def browse_file():
     file_path.set(filedialog.askopenfilename(
         filetypes=[("STL files", "*.stl")]))
@@ -82,8 +76,10 @@ def main_calculations(stl_path, scale):
     # Initialize an array to store the tiled output
     tiled_volume = np.zeros_like(voxel_array, dtype=int)
 
-    # Instead of calling the plotting functions directly, call the new plot_function
-    root.after(0, plot_function, tiled_volume, voxel_array)
+    # Instead of calling the plotting functions directly, call the new center_plot_legos
+
+    root.after(0, center_plot_legos
+, tiled_volume, voxel_array)
     # Destroy the loading screen
     root.after(0, root.destroy)
 
