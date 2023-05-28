@@ -9,6 +9,7 @@ import itertools
 import numpy as np
 import json
 import matplotlib.pyplot as plt
+import time
 
 
 def switch_axis_of_array(array, new_axes_order):
@@ -155,6 +156,7 @@ def center_plot_legos(tiled_volume, voxel_array):
     tiled_volume (numpy.ndarray): The 3D array representing the filled volume.
     volume_array (numpy.ndarray): The 3D array representing the volume to be filled.
     """
+
     # Create a new figure for the plot
     fig = plt.figure()
     # Add a 3D subplot to the figure
@@ -170,6 +172,7 @@ def center_plot_legos(tiled_volume, voxel_array):
     # Calculate the middle indices for the volume array
     middle_indices = [dim // 2 for dim in voxel_array.shape]
 
+    start_time = time.time()
     # Iterate through the volume array starting from the middle bottom
     for z, y, x in itertools.product(
         list(range(0, voxel_array.shape[0])),
@@ -192,6 +195,11 @@ def center_plot_legos(tiled_volume, voxel_array):
                              7.8, color=allowed_bricks_dict.get(brick), shade=True)
                     # Stop iterating through bricks since one has been placed
                     break
+
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    print(f"The optimizer took {elapsed_time} seconds to execute.")
+
     # Save the dictionary as a JSON file
     with open("latest_bricks_placed.json", "w") as json_file:
         json.dump(bricks_placed, json_file)
