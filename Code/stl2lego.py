@@ -76,7 +76,7 @@ def main_calculations(stl_path, scale):
     # Visualize the voxel array
     # plot_voxel_array(voxel_array, voxel_size)
 
-    # save_array_json(voxel_array, "voxel_array")
+    save_array_json(voxel_array, "voxel_array")
 
     # Convert the nested list to a NumPy array and switches axises
     new_axes_order = [2, 1, 0]  # [0, 1, 2] = [x,y, z] ergo same
