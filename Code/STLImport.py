@@ -8,6 +8,7 @@ import numpy as np
 import trimesh
 import matplotlib.pyplot as plt
 import json
+import time
 
 from scipy.spatial.transform import Rotation
 
@@ -93,7 +94,7 @@ def align_tallest_dimension_with_z(stl_mesh):
     return set_z_axis_mesh(stl_mesh, tallest_dim_index)
 
 
-def stl_to_voxel_array(stl_mesh, voxel_size, num_rays=3, seed=0) -> np.array:
+def stl_to_voxel_array(stl_mesh, voxel_size, num_rays=5, seed=0) -> np.array:
     """
     Converts an STL mesh into a voxel representation. Voxels are set to True if their
     centers are within the geometry of the mesh.
@@ -107,6 +108,7 @@ def stl_to_voxel_array(stl_mesh, voxel_size, num_rays=3, seed=0) -> np.array:
     Returns:
         A 3D numpy array representing the voxelized mesh.
     """
+    start_time = time.time()
 
     # Set the seed for the random number generator
     np.random.seed(seed)
@@ -115,14 +117,9 @@ def stl_to_voxel_array(stl_mesh, voxel_size, num_rays=3, seed=0) -> np.array:
     min_coords = stl_mesh.bounds[0]
     max_coords = stl_mesh.bounds[1]
 
-    print("min coords: " + str(min_coords) +
-          ". max coords: " + str(max_coords))
-
     # Calculate the dimensions of the voxel grid
     grid_dimensions = np.ceil(
         (max_coords - min_coords) / voxel_size).astype(int)
-
-    print("Grid dimension: " + str(grid_dimensions))
 
     # Initialize the voxel grid
     voxel_grid = np.zeros(grid_dimensions, dtype=bool)
@@ -161,6 +158,10 @@ def stl_to_voxel_array(stl_mesh, voxel_size, num_rays=3, seed=0) -> np.array:
 
                 if all_rays_inside:
                     voxel_grid[x, y, z] = 1
+
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    print(f"The STL to voxel cmd took {elapsed_time} seconds to execute.")
 
     return voxel_grid
 
