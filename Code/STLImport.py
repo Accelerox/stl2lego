@@ -7,6 +7,7 @@ functions is to aid in the voxelization of 3D models.
 import numpy as np
 import trimesh
 import matplotlib.pyplot as plt
+import json
 
 from scipy.spatial.transform import Rotation
 
@@ -243,6 +244,12 @@ def save_array_json(voxel_array: np.array, path: str):
         voxel_array: The numpy array to be saved.
         path: The directory path where the file is to be saved.
     """
+    # convert to python nested list
+    voxel_list = voxel_array.tolist()
+
+    with open(path+'.json', 'w') as outfile:
+        json.dump(voxel_list, outfile)
+
 
 def stl_to_mesh(stl_path: str) -> trimesh.Trimesh:
     """
