@@ -93,7 +93,7 @@ def align_tallest_dimension_with_z(stl_mesh):
     return set_z_axis_mesh(stl_mesh, tallest_dim_index)
 
 
-def stl_to_voxel_array(stl_mesh, voxel_size) -> np.array:
+def stl_to_voxel_array(stl_mesh, voxel_size, num_rays=3, seed=0) -> np.array:
     """
     Converts an STL mesh into a voxel representation. Voxels are set to True if their
     centers are within the geometry of the mesh.
@@ -101,10 +101,15 @@ def stl_to_voxel_array(stl_mesh, voxel_size) -> np.array:
     Args:
         stl_mesh: The input STL mesh.
         voxel_size: The size of the voxel in each dimension.
+        num_rays: The number of rays to cast from each voxel.
+        seed: The seed for the random number generator.
 
     Returns:
         A 3D numpy array representing the voxelized mesh.
     """
+
+    # Set the seed for the random number generator
+    np.random.seed(seed)
 
     # Calculate the bounding box of the STL mesh (returns x y z)
     min_coords = stl_mesh.bounds[0]
@@ -134,23 +139,31 @@ def stl_to_voxel_array(stl_mesh, voxel_size) -> np.array:
                 voxel_center = min_coords + voxel_size * \
                     (np.array([x, y, z]) + 0.5) + grid_offset
 
-                # Set the ray origin to the voxel center and use the direction 
-                # pointing from the mesh's centroid to the voxel center
-                ray_origin = voxel_center
-                ray_direction = (voxel_center - stl_mesh.centroid) / \
-                    np.linalg.norm(voxel_center - stl_mesh.centroid)
+                all_rays_inside = True  # Assume initially that all rays are inside
 
-                # Perform a ray-mesh intersection query
-                locations, index_ray, index_tri = stl_mesh.ray.intersects_location(
-                    ray_origins=[ray_origin], ray_directions=[
-                        ray_direction], multiple_hits=False
-                )
+                for _ in range(num_rays):
+                    # Generate a random unit vector
+                    theta = np.random.uniform(0, 2*np.pi)
+                    phi = np.random.uniform(0, np.pi)
 
-                # If the number of intersections is odd, the voxel center is inside the mesh
-                if len(locations) % 2 == 1:
+                    ray_direction = np.array([np.sin(phi)*np.cos(theta), np.sin(phi)*np.sin(theta), np.cos(phi)])
+
+                    # Perform a ray-mesh intersection query
+                    locations, index_ray, index_tri = stl_mesh.ray.intersects_location(
+                        ray_origins=[voxel_center], ray_directions=[
+                            ray_direction], multiple_hits=False
+                    )
+
+                    # If the number of intersections is even, the voxel center is outside the mesh
+                    if len(locations) % 2 == 0:
+                        all_rays_inside = False
+                        break  # No need to check the rest of the rays
+
+                if all_rays_inside:
                     voxel_grid[x, y, z] = 1
 
     return voxel_grid
+
 
 
 def find_surface_voxels(voxel_array) -> np.array:
