@@ -12,7 +12,8 @@ def rescale_mesh(stl_mesh, voxel_size, target_scale, height_dimension=2):
         stl_mesh: The input STL mesh.
         voxel_size: The size of the voxel in each dimension.
         target_scale: The scale.
-        height_dimension: The dimension to be treated as the height (0 for x, 1 for y, 2 for z).
+        height_dimension: The dimension to be treated as the height 
+        (0 for x, 1 for y, 2 for z).
     """
 
     # Translate the mesh so that its lowest height_dimension-coordinate is at 0
@@ -126,7 +127,8 @@ def stl_to_voxel_array(stl_mesh, voxel_size) -> np.array:
                 voxel_center = min_coords + voxel_size * \
                     (np.array([x, y, z]) + 0.5) + grid_offset
 
-                # Set the ray origin to the voxel center and use the direction pointing from the mesh's centroid to the voxel center
+                # Set the ray origin to the voxel center and use the direction 
+                # pointing from the mesh's centroid to the voxel center
                 ray_origin = voxel_center
                 ray_direction = (voxel_center - stl_mesh.centroid) / \
                     np.linalg.norm(voxel_center - stl_mesh.centroid)
@@ -153,7 +155,8 @@ def find_surface_voxels(voxel_array) -> np.array:
         voxel_array: 3D numpy array representing the voxel grid.
 
     Returns:
-        A 3D numpy array of the same size as the input array, with True values for surface voxels and False elsewhere.
+        A 3D numpy array of the same size as the input array, with True values 
+        for surface voxels and False elsewhere.
     """
     surface_voxels = np.zeros_like(voxel_array, dtype=bool)
 
@@ -176,7 +179,8 @@ def find_surface_voxels(voxel_array) -> np.array:
 
 def plot_voxel_array(voxel_array, voxel_size):
     """
-    Visualizes the given voxel array using matplotlib, where each voxel is represented as a cube.
+    Visualizes the given voxel array using matplotlib, where each voxel is 
+    represented as a cube.
 
     Args:
         voxel_array: 3D numpy array representing the voxel grid.
@@ -200,7 +204,8 @@ def plot_voxel_array(voxel_array, voxel_size):
     min_x, min_y, min_z = true_voxels.min(axis=0) - buffer
     max_x, max_y, max_z = true_voxels.max(axis=0) + buffer
 
-    # Set the axis limits to the min and max indices in each dimension (scaled by voxel size)
+    # Set the axis limits to the min and max indices in each dimension 
+    # (scaled by voxel size)
     ax.set_xlim(min_x * voxel_size_mm[0], max_x * voxel_size_mm[0])
     ax.set_ylim(min_y * voxel_size_mm[1], max_y * voxel_size_mm[1])
     ax.set_zlim(min_z * voxel_size_mm[2], max_z * voxel_size_mm[2])
@@ -225,7 +230,8 @@ def plot_voxel_array(voxel_array, voxel_size):
 
 def save_array_json(voxel_array: np.array, path: str):
     """
-    Saves a numpy array as a json file at the specified path. The '.json' extension is automatically added.
+    Saves a numpy array as a json file at the specified path. The '.json' 
+    extension is automatically added.
 
     Args:
         voxel_array: The numpy array to be saved.

@@ -77,9 +77,8 @@ def main_calculations(stl_path, scale):
     tiled_volume = np.zeros_like(voxel_array, dtype=int)
 
     # Instead of calling the plotting functions directly, call the new center_plot_legos
+    root.after(0, center_plot_legos, tiled_volume, voxel_array)
 
-    root.after(0, center_plot_legos
-, tiled_volume, voxel_array)
     # Destroy the loading screen
     root.after(0, root.destroy)
 
@@ -89,7 +88,7 @@ def main_calculations(stl_path, scale):
 
 def calculate_scale_and_call_function():
     """
-    Helper function for exectuting functions when the generate button is called.
+    Function calls when 'Generete' button is pressed
     """
 
     height = float(desired_height.get())
@@ -111,8 +110,6 @@ def calculate_scale_and_call_function():
 
 
 if __name__ == "__main__":
-
-    generate_allowed_bricks()
 
     root_GUI = tk.Tk()
     root_GUI.title("STL to LEGO")
