@@ -94,21 +94,21 @@ def align_tallest_dimension_with_z(stl_mesh):
     return set_z_axis_mesh(stl_mesh, tallest_dim_index)
 
 
-def stl_to_voxel_array(stl_mesh, voxel_size, num_rays=5, seed=0) -> np.array:
+def stl_to_voxel_array(stl_mesh, voxel_size, num_random_rays=2, seed=0) -> np.array:
     """
     Converts an STL mesh into a voxel representation. Voxels are set to True if their
-    centers are within the geometry of the mesh.
+    centers are within the geometry of the mesh. One ray is always towards the center of the mesh, 
+    the remaining are randomly generated.
 
     Args:
         stl_mesh: The input STL mesh.
         voxel_size: The size of the voxel in each dimension.
-        num_rays: The number of rays to cast from each voxel.
+        num_random_rays: The number of random rays to cast from each voxel (additional to the one towards the center).
         seed: The seed for the random number generator.
 
     Returns:
         A 3D numpy array representing the voxelized mesh.
     """
-    start_time = time.time()
 
     # Set the seed for the random number generator
     np.random.seed(seed)
@@ -117,9 +117,14 @@ def stl_to_voxel_array(stl_mesh, voxel_size, num_rays=5, seed=0) -> np.array:
     min_coords = stl_mesh.bounds[0]
     max_coords = stl_mesh.bounds[1]
 
+    print("min coords: " + str(min_coords) +
+          ". max coords: " + str(max_coords))
+
     # Calculate the dimensions of the voxel grid
     grid_dimensions = np.ceil(
         (max_coords - min_coords) / voxel_size).astype(int)
+
+    print("Grid dimension: " + str(grid_dimensions))
 
     # Initialize the voxel grid
     voxel_grid = np.zeros(grid_dimensions, dtype=bool)
@@ -138,13 +143,22 @@ def stl_to_voxel_array(stl_mesh, voxel_size, num_rays=5, seed=0) -> np.array:
 
                 all_rays_inside = True  # Assume initially that all rays are inside
 
-                for _ in range(num_rays):
-                    # Generate a random unit vector
+                # Generate rays directions
+                ray_directions = []
+                
+                # First ray points from the mesh's centroid to the voxel center
+                ray_directions.append((voxel_center - stl_mesh.centroid) / np.linalg.norm(voxel_center - stl_mesh.centroid))
+
+                # Generate random rays
+                for _ in range(num_random_rays):
                     theta = np.random.uniform(0, 2*np.pi)
+                    #theta = np.pi * 2
                     phi = np.random.uniform(0, np.pi)
+                    #phi = np.pi * 1
+                    ray_directions.append(np.array([np.sin(phi)*np.cos(theta), np.sin(phi)*np.sin(theta), np.cos(phi)]))
 
-                    ray_direction = np.array([np.sin(phi)*np.cos(theta), np.sin(phi)*np.sin(theta), np.cos(phi)])
-
+                # Check each ray
+                for ray_direction in ray_directions:
                     # Perform a ray-mesh intersection query
                     locations, index_ray, index_tri = stl_mesh.ray.intersects_location(
                         ray_origins=[voxel_center], ray_directions=[
@@ -159,11 +173,8 @@ def stl_to_voxel_array(stl_mesh, voxel_size, num_rays=5, seed=0) -> np.array:
                 if all_rays_inside:
                     voxel_grid[x, y, z] = 1
 
-    end_time = time.time()
-    elapsed_time = end_time - start_time
-    print(f"The STL to voxel cmd took {elapsed_time} seconds to execute.")
-
     return voxel_grid
+
 
 
 
