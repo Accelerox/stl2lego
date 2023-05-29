@@ -12,15 +12,13 @@ Public Class Form1
     Public Shared Objects2select = CATIA.ActiveDocument.Selection
     Public Shared documents1 = CATIA.Documents
 
-
     Public Shared Function modify_parameters(documents1, products1, Part_Name, Parameter_name, Parameter_Value)
-        Debug.Print(Parameter_name & " modified  to " & Parameter_Value)
         Dim I_Part = documents1.Item(products1.Item(Part_Name).PartNumber & ".CATPart")
         Dim I_Part_Part = I_Part.Part
         Dim Parameter2 = I_Part_Part.Parameters
         Dim position1 = Parameter2.item(Parameter_name)
         position1.value = Parameter_Value
-        'Part.Update()
+        Return True
     End Function
 
     ' Define a class to hold the brick data
@@ -37,8 +35,9 @@ Public Class Form1
         Dim parameters1 = product1.Parameters
         Dim Relations1 = product1.Relations
 
+        Dim json As String = File.ReadAllText("\\ad.liu.se\home\matga917\Documents\Cad nibbas\TMKT57\JSON2LEGO\big_benchy_bricks_placed.json")
         'Dim json As String = File.ReadAllText("\\ad.liu.se\home\matga917\Documents\Cad nibbas\TMKT57\JSON2LEGO\latest_bricks_placed.json")
-        Dim json As String = File.ReadAllText("\\ad.liu.se\home\matga917\Documents\Cad nibbas\TMKT57\JSON2LEGO\pyramid_1x1voxel_array.json")
+
         Dim bricks As List(Of Brick) = JsonConvert.DeserializeObject(Of List(Of Brick))(json)
 
         ' Reset ProgressBar color to default (usually Green)
@@ -58,7 +57,6 @@ Public Class Form1
         Dim startTime As DateTime = DateTime.Now
 
         For Each brick In bricks
-            ' Instance the brick
             Dim New_Part = products1.AddNewComponent("Part", "")
             New_Part.Name = $"Instance_size{brick.brick(0)}x{brick.brick(1)}x{brick.brick(2)}_pos{brick.position(0)}x{brick.position(1)}x{brick.position(2)}"
 
@@ -76,7 +74,7 @@ Public Class Form1
             '------- Set the current part as destination of the instantiation (2)
             Dim factory = I_Part_Part.GetCustomerFactory("InstanceFactory")
             '------- Locate the Power Copy and Part in which the template is located (3)
-            factory.BeginInstanceFactory("PowerCopy_brick", "\\ad.liu.se\home\matga917\Documents\Cad nibbas\TMKT57\JSON2LEGO\Lego1_Approach2.CATPart") '------- Need to be modified
+            factory.BeginInstanceFactory("PowerCopy_brick", ".\LEGO_brick_fixed.CATPart") '------- Need to be modified
             '------- Start the Instantiation Process (4)
             factory.BeginInstantiate
             '------- Set the Constraints for the template (5)
@@ -97,15 +95,15 @@ Public Class Form1
             modify_parameters(documents1, products1, New_Part.Name, "pos_Z", brick.position(0) * 9.6)
 
             ' Set the brick dimensions
-            'modify_parameters(documents1, products1, New_Part.Name, "Nr_Of_Cylinders_in_X", brick.brick(2))
-            'modify_parameters(documents1, products1, New_Part.Name, "Nr_Of_Cylinders_in_Y", brick.brick(1))
+            modify_parameters(documents1, products1, New_Part.Name, "Nr_Of_Cylinders_in_X", brick.brick(2))
+            modify_parameters(documents1, products1, New_Part.Name, "Nr_Of_Cylinders_in_Y", brick.brick(1))
 
             I_Part_Part.Update()
 
             ' Update the ProgressBar
             ProgressBar1.Value += 1
 
-            Calculate the progress percentage
+            'Calculate the progress percentage
             Dim progressPercentage As Integer = CInt((ProgressBar1.Value / ProgressBar1.Maximum) * 100)
 
             ' Calculate elapsed and remaining time
@@ -113,7 +111,7 @@ Public Class Form1
             Dim remainingTime As TimeSpan = TimeSpan.FromTicks((elapsedTime.Ticks / ProgressBar1.Value) * (ProgressBar1.Maximum - ProgressBar1.Value))
 
             ' Update the Label's text with progress and estimated time remaining
-            Label1.Text = $"{progressPercentage}% - Estimated time remaining: {remainingTime.ToString(@"hh\:mm\:ss")}"
+            Label1.Text = String.Format("{0}% - Estimated time remaining: {1}", progressPercentage, remainingTime.ToString("hh\:mm\:ss"))
         Next
 
 
@@ -151,7 +149,7 @@ Public Class Form1
                 Dim remainingTime As TimeSpan = TimeSpan.FromTicks((elapsedTime.Ticks / ProgressBar1.Value) * (ProgressBar1.Maximum - ProgressBar1.Value))
 
                 ' Update the Label's text with progress and estimated time remaining
-                Label1.Text = $"{progressPercentage}% - Estimated time remaining: {remainingTime.ToString(@"hh\:mm\:ss")}"
+                Label1.Text = String.Format("{0}% - Estimated time remaining: {1}", progressPercentage, remainingTime.ToString("hh\:mm\:ss"))
             End If
         Next
 
@@ -165,4 +163,15 @@ Public Class Form1
 
     End Sub
 
+    Private Sub ProgressBar1_Click(sender As Object, e As EventArgs) Handles ProgressBar1.Click
+
+    End Sub
+
+    Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+
+    End Sub
+
+    Private Sub Label1_Click(sender As Object, e As EventArgs) Handles Label1.Click
+
+    End Sub
 End Class
