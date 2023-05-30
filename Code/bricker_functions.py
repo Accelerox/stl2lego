@@ -9,6 +9,7 @@ import itertools
 import numpy as np
 import json
 import matplotlib.pyplot as plt
+import time
 
 
 def switch_axis_of_array(array, new_axes_order):
@@ -32,13 +33,14 @@ def switch_axis_of_array(array, new_axes_order):
     return np.transpose(array, new_axes_order)
 
 
-def can_place_brick(brick, volume_array, z, y, x):
+def can_place_brick(brick, volume_array, tiled_volume, z, y, x):
     """
     Determines whether a brick can be placed at a given position in the volume array.
 
     Parameters:
     brick (tuple): The dimensions of the brick.
     volume_array (numpy.ndarray): The 3D array representing the volume to be filled.
+    tiled_volume (numpy.ndarray): The 3D array representing the filled volume.
     z, y, x (int): The coordinates in the volume array where the brick should be placed.
 
     Returns:
@@ -52,9 +54,11 @@ def can_place_brick(brick, volume_array, z, y, x):
                     or y + dy >= volume_array.shape[1]
                     or x + dx >= volume_array.shape[2]
                     or not volume_array[z + dz, y + dy, x + dx]
+                    or tiled_volume[z + dz, y + dy, x + dx] == 1
                 ):
                     return False
     return True
+
 
 
 def is_brick_supported(brick, tiled_volume, z, y, x):
@@ -155,6 +159,7 @@ def center_plot_legos(tiled_volume, voxel_array):
     tiled_volume (numpy.ndarray): The 3D array representing the filled volume.
     volume_array (numpy.ndarray): The 3D array representing the volume to be filled.
     """
+
     # Create a new figure for the plot
     fig = plt.figure()
     # Add a 3D subplot to the figure
@@ -170,6 +175,7 @@ def center_plot_legos(tiled_volume, voxel_array):
     # Calculate the middle indices for the volume array
     middle_indices = [dim // 2 for dim in voxel_array.shape]
 
+    start_time = time.time()
     # Iterate through the volume array starting from the middle bottom
     for z, y, x in itertools.product(
         list(range(0, voxel_array.shape[0])),
@@ -183,7 +189,7 @@ def center_plot_legos(tiled_volume, voxel_array):
                 allowed_lego_bricks, key=lambda brick: brick[0] * brick[1] * brick[2], reverse=True)
 
             for brick in sorted_bricks:
-                if can_place_brick(brick, voxel_array, z, y, x) and \
+                if can_place_brick(brick, voxel_array, tiled_volume, z, y, x) and \
                         is_brick_supported(brick, tiled_volume, z, y, x):
 
                     place_brick(brick, tiled_volume, z, y, x, bricks_placed)
@@ -192,6 +198,11 @@ def center_plot_legos(tiled_volume, voxel_array):
                              7.8, color=allowed_bricks_dict.get(brick), shade=True)
                     # Stop iterating through bricks since one has been placed
                     break
+
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    print(f"The optimizer took {elapsed_time} seconds to execute.")
+
     # Save the dictionary as a JSON file
     with open("latest_bricks_placed.json", "w") as json_file:
         json.dump(bricks_placed, json_file)
@@ -236,6 +247,10 @@ def generate_allowed_bricks():
         (1, 1, 1): "red",
         (1, 1, 2): "blue",
         (1, 2, 2): "green",
+        (1, 2, 3): "orange",
+        (1, 2, 4): "purple",
+        (1, 4, 6): "grey",
+        (1, 1, 3): "turquoise",
     }
 
     rotated_brick_list = {}
