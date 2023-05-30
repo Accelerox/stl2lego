@@ -94,7 +94,7 @@ def align_tallest_dimension_with_z(stl_mesh):
     return set_z_axis_mesh(stl_mesh, tallest_dim_index)
 
 
-def stl_to_voxel_array(stl_mesh, voxel_size, num_random_rays=2, seed=0) -> np.array:
+def stl_to_voxel_array(stl_mesh, voxel_size, num_random_rays=10, seed=0) -> np.array:
     """
     Converts an STL mesh into a voxel representation. Voxels are set to True if their
     centers are within the geometry of the mesh. One ray is always towards the center of the mesh, 
@@ -147,15 +147,15 @@ def stl_to_voxel_array(stl_mesh, voxel_size, num_random_rays=2, seed=0) -> np.ar
                 ray_directions = []
                 
                 # First ray points from the mesh's centroid to the voxel center
-                ray_directions.append((voxel_center - stl_mesh.centroid) / np.linalg.norm(voxel_center - stl_mesh.centroid))
+                ray_directions.append((voxel_center - stl_mesh.centroid) / 
+                                      np.linalg.norm(voxel_center - stl_mesh.centroid))
 
                 # Generate random rays
                 for _ in range(num_random_rays):
                     theta = np.random.uniform(0, 2*np.pi)
-                    #theta = np.pi * 2
                     phi = np.random.uniform(0, np.pi)
-                    #phi = np.pi * 1
-                    ray_directions.append(np.array([np.sin(phi)*np.cos(theta), np.sin(phi)*np.sin(theta), np.cos(phi)]))
+                    ray_directions.append(np.array([np.sin(phi)*np.cos(theta), 
+                                                    np.sin(phi)*np.sin(theta), np.cos(phi)]))
 
                 # Check each ray
                 for ray_direction in ray_directions:
