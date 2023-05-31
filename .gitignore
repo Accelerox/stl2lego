@@ -2,3 +2,7 @@
 
 *.DS_Store
 *~
+*.json
+Code/voxel_array.json
+Code/__pycache__/*
+Code/STLs/*
