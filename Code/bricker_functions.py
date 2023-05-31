@@ -3,6 +3,8 @@ This script contains a collection of functions designed for generating, manipula
 The core functionality includes switching array axes, checking if a LEGO brick can be placed or is supported at a 
 given position, placing bricks, and generating plots of completed models. In addition, bricks and their rotations 
 are defined and colors are assigned for plotting.
+
+Authors: Max Idermark & Mats Gard
 """
 
 import itertools

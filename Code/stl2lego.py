@@ -10,6 +10,8 @@ This script provides an interface to transform STL (Stereolithography)
 to the desired height and unit of measure specified by the user.
 This is accomplished by executing several operations such as mesh rotation, 
 alignment, rescaling, conversion to voxel arrays and ultimately, plotting the structure.
+
+Authors: Max Idermark & Mats Gard
 """
 
 import tkinter as tk
